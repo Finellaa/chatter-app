@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+// src/App.tsx
+import React, { useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./App.css"
+import { initializeApp } from 'firebase/app';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import CreatePost from './pages/CreatePost';
+import Navigation from './pages/Navbar';
+import { config } from './firebase'
+import { AuthRoute } from './components/authRoutes';
+import Register from './pages/Register'
+initializeApp(config.firebaseConfig);
 
-function App() {
+
+const App: React.FC = () => {
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  useEffect(() => {
+    const authState = localStorage.getItem('isAuth');
+    if (authState === 'true') {
+      setIsAuth(true);
+    }
+  }, []);
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    <Router>
+      <Routes>
+      <Route path="/" element={<AuthRoute><Home /></AuthRoute>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="register" element={<Register />} />
+      <Route path="nav" element={<Navigation isAuth={false} />} />
+      <Route path="create" element={<CreatePost isAuth={false}/>} />
+      </Routes>
+    </Router>
+);
+};
 
 export default App;
